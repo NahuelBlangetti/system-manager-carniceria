@@ -9,11 +9,28 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
+        if (app()->environment('production')) {
+            $email    = env('ADMIN_EMAIL');
+            $password = env('ADMIN_PASSWORD');
+
+            if (blank($email) || blank($password)) {
+                throw new \RuntimeException(
+                    'Definí ADMIN_EMAIL y ADMIN_PASSWORD en el .env de producción antes de sembrar.'
+                );
+            }
+
+            $name = env('ADMIN_NAME', 'Administrador');
+        } else {
+            $email    = env('ADMIN_EMAIL', 'admin@carniceria-emanuel.com');
+            $password = env('ADMIN_PASSWORD', 'carniceriaemanuel852');
+            $name     = env('ADMIN_NAME', 'Administrador');
+        }
+
         User::updateOrCreate(
-            ['email' => 'admin@carniceria.com'],
+            ['email' => $email],
             [
-                'name'              => 'Administrador',
-                'password'          => 'carniceria',
+                'name'              => $name,
+                'password'          => $password,
                 'email_verified_at' => now(),
             ]
         );
