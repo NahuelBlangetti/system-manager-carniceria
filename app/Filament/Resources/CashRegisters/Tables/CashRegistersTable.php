@@ -48,9 +48,9 @@ class CashRegistersTable
                     ->placeholder('—')
                     ->color(fn (?string $state): string => match (true) {
                         $state === null => 'gray',
-                        (float) $state > 0  => 'success',
-                        (float) $state < 0  => 'danger',
-                        default             => 'gray',
+                        (float) $state > 0 => 'success',
+                        (float) $state < 0 => 'danger',
+                        default => 'gray',
                     })
                     ->sortable(),
                 TextColumn::make('opened_at')
@@ -66,14 +66,14 @@ class CashRegistersTable
                     ->label('Estado')
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'open'   => 'Abierta',
+                        'open' => 'Abierta',
                         'closed' => 'Cerrada',
-                        default  => $state,
+                        default => $state,
                     })
                     ->color(fn (string $state): string => match ($state) {
-                        'open'   => 'success',
+                        'open' => 'success',
                         'closed' => 'gray',
-                        default  => 'gray',
+                        default => 'gray',
                     }),
                 TextColumn::make('created_at')
                     ->label('Creado')

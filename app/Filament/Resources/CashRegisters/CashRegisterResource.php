@@ -21,9 +21,13 @@ class CashRegisterResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
 
     protected static ?string $navigationLabel = 'Caja';
+
     protected static ?string $modelLabel = 'caja';
+
     protected static ?string $pluralModelLabel = 'cajas';
+
     protected static string|\UnitEnum|null $navigationGroup = 'Operaciones';
+
     protected static ?int $navigationSort = 2;
 
     public static function form(Schema $schema): Schema

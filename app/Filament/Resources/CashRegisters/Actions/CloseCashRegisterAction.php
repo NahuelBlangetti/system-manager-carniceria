@@ -46,6 +46,22 @@ class CloseCashRegisterAction
                         ->dehydrated(false),
                 ];
 
+                if ($register && $register->incomeEntriesTotal() > 0) {
+                    $fields[] = TextInput::make('income_entries_preview')
+                        ->label('Ingresos de caja')
+                        ->default(CashRegister::formatMoney($register->incomeEntriesTotal()))
+                        ->disabled()
+                        ->dehydrated(false);
+                }
+
+                if ($register && $register->expenseEntriesTotal() > 0) {
+                    $fields[] = TextInput::make('expense_entries_preview')
+                        ->label('Egresos de caja')
+                        ->default(CashRegister::formatMoney($register->expenseEntriesTotal()))
+                        ->disabled()
+                        ->dehydrated(false);
+                }
+
                 if ($register && $register->transferSalesTotal() > 0) {
                     $fields[] = TextInput::make('transfer_sales_preview')
                         ->label('Ventas en transferencia')
@@ -65,36 +81,36 @@ class CloseCashRegisterAction
                 }
 
                 $fields[] = TextInput::make('closing_amount')
-                        ->label('Efectivo contado')
-                        ->numeric()
-                        ->required()
-                        ->minValue(0)
-                        ->prefix('$')
-                        ->live(debounce: 300)
-                        ->helperText(function (Get $get) use ($register): string {
-                            if (! $register) {
-                                return '';
-                            }
+                    ->label('Efectivo contado')
+                    ->numeric()
+                    ->required()
+                    ->minValue(0)
+                    ->prefix('$')
+                    ->live(debounce: 300)
+                    ->helperText(function (Get $get) use ($register): string {
+                        if (! $register) {
+                            return '';
+                        }
 
-                            $expected = $register->calculateExpectedAmount();
-                            $closing  = (float) ($get('closing_amount') ?? 0);
-                            $diff     = $closing - $expected;
+                        $expected = $register->calculateExpectedAmount();
+                        $closing = (float) ($get('closing_amount') ?? 0);
+                        $diff = $closing - $expected;
 
-                            $base = 'Arqueo solo de efectivo. Monto esperado: ' . CashRegister::formatMoney($expected);
+                        $base = 'Arqueo solo de efectivo. Monto esperado: '.CashRegister::formatMoney($expected);
 
-                            if ($get('closing_amount') === null || $get('closing_amount') === '') {
-                                return $base;
-                            }
+                        if ($get('closing_amount') === null || $get('closing_amount') === '') {
+                            return $base;
+                        }
 
-                            $diffLabel = $diff >= 0 ? 'Sobrante' : 'Faltante';
+                        $diffLabel = $diff >= 0 ? 'Sobrante' : 'Faltante';
 
-                            return $base . ' · ' . $diffLabel . ': ' . CashRegister::formatMoney(abs($diff));
-                        });
+                        return $base.' · '.$diffLabel.': '.CashRegister::formatMoney(abs($diff));
+                    });
 
                 $fields[] = Textarea::make('closing_notes')
-                        ->label('Notas de cierre')
-                        ->rows(2)
-                        ->placeholder('Opcional: observaciones al cerrar el turno.');
+                    ->label('Notas de cierre')
+                    ->rows(2)
+                    ->placeholder('Opcional: observaciones al cerrar el turno.');
 
                 return $fields;
             })
@@ -127,9 +143,9 @@ class CloseCashRegisterAction
                 Notification::make()
                     ->title('Caja cerrada')
                     ->body(
-                        'Esperado: ' . CashRegister::formatMoney((float) $register->expected_amount)
-                        . ' · Diferencia: ' . CashRegister::formatMoney(abs($diff))
-                        . ($diff >= 0 ? ' (sobrante)' : ' (faltante)')
+                        'Esperado: '.CashRegister::formatMoney((float) $register->expected_amount)
+                        .' · Diferencia: '.CashRegister::formatMoney(abs($diff))
+                        .($diff >= 0 ? ' (sobrante)' : ' (faltante)')
                     )
                     ->success()
                     ->send();

@@ -20,7 +20,7 @@ class CreateCashRegister extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['status']    = 'open';
+        $data['status'] = 'open';
         $data['user_id'] ??= auth()->id();
 
         return $data;

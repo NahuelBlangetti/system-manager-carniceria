@@ -21,12 +21,12 @@ class CashRegister extends Model
     ];
 
     protected $casts = [
-        'opening_amount'  => 'decimal:2',
-        'closing_amount'  => 'decimal:2',
+        'opening_amount' => 'decimal:2',
+        'closing_amount' => 'decimal:2',
         'expected_amount' => 'decimal:2',
-        'difference'      => 'decimal:2',
-        'opened_at'       => 'datetime',
-        'closed_at'       => 'datetime',
+        'difference' => 'decimal:2',
+        'opened_at' => 'datetime',
+        'closed_at' => 'datetime',
     ];
 
     public function user(): BelongsTo
@@ -37,6 +37,11 @@ class CashRegister extends Model
     public function sales(): HasMany
     {
         return $this->hasMany(Sale::class);
+    }
+
+    public function entries(): HasMany
+    {
+        return $this->hasMany(CashRegisterEntry::class);
     }
 
     public function cashSalesTotal(): float
@@ -69,9 +74,22 @@ class CashRegister extends Model
             ->sum('total');
     }
 
+    public function incomeEntriesTotal(): float
+    {
+        return (float) $this->entries()->where('type', 'income')->sum('amount');
+    }
+
+    public function expenseEntriesTotal(): float
+    {
+        return (float) $this->entries()->where('type', 'expense')->sum('amount');
+    }
+
     public function calculateExpectedAmount(): float
     {
-        return (float) $this->opening_amount + $this->cashSalesTotal();
+        return (float) $this->opening_amount
+            + $this->cashSalesTotal()
+            + $this->incomeEntriesTotal()
+            - $this->expenseEntriesTotal();
     }
 
     public function close(float $closingAmount, ?string $closingNotes = null): void
@@ -82,23 +100,23 @@ class CashRegister extends Model
 
         if (filled($closingNotes)) {
             $notes = filled($notes)
-                ? $notes . "\n\n" . $closingNotes
+                ? $notes."\n\n".$closingNotes
                 : $closingNotes;
         }
 
         $this->update([
-            'closing_amount'  => $closingAmount,
+            'closing_amount' => $closingAmount,
             'expected_amount' => $expected,
-            'difference'      => $closingAmount - $expected,
-            'closed_at'       => now(),
-            'status'          => 'closed',
-            'notes'           => $notes,
+            'difference' => $closingAmount - $expected,
+            'closed_at' => now(),
+            'status' => 'closed',
+            'notes' => $notes,
         ]);
     }
 
     public static function formatMoney(float $amount): string
     {
-        return '$' . number_format($amount, 2, ',', '.');
+        return '$'.number_format($amount, 2, ',', '.');
     }
 
     public static function lastClosed(): ?self

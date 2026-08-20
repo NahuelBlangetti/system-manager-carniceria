@@ -4,6 +4,7 @@ namespace App\Filament\Resources\CashRegisters\Schemas;
 
 use App\Models\CashRegister;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -49,9 +50,9 @@ class CashRegisterForm
                                     return null;
                                 }
 
-                                return 'Cierre del ' . $last->closed_at->format('d/m/Y H:i')
-                                    . ': ' . CashRegister::formatMoney((float) $last->closing_amount)
-                                    . '. Desactivá esta opción si el efectivo inicial es otro.';
+                                return 'Cierre del '.$last->closed_at->format('d/m/Y H:i')
+                                    .': '.CashRegister::formatMoney((float) $last->closing_amount)
+                                    .'. Desactivá esta opción si el efectivo inicial es otro.';
                             })
                             ->afterStateUpdated(function (bool $state, Set $set): void {
                                 $set('opening_amount', $state
@@ -105,26 +106,70 @@ class CashRegisterForm
                             ->disabled(),
 
                         Text::make(fn (?CashRegister $record): string => 'Ventas en efectivo: '
-                            . CashRegister::formatMoney($record?->cashSalesTotal() ?? 0))
+                            .CashRegister::formatMoney($record?->cashSalesTotal() ?? 0))
                             ->columnSpanFull(),
 
                         Text::make(fn (?CashRegister $record): string => 'Ventas en transferencia: '
-                            . CashRegister::formatMoney($record?->transferSalesTotal() ?? 0))
+                            .CashRegister::formatMoney($record?->transferSalesTotal() ?? 0))
                             ->visible(fn (?CashRegister $record): bool => ($record?->transferSalesTotal() ?? 0) > 0)
                             ->columnSpanFull(),
 
                         Text::make(fn (?CashRegister $record): string => 'Ventas con tarjeta: '
-                            . CashRegister::formatMoney($record?->cardSalesTotal() ?? 0))
+                            .CashRegister::formatMoney($record?->cardSalesTotal() ?? 0))
                             ->visible(fn (?CashRegister $record): bool => ($record?->cardSalesTotal() ?? 0) > 0)
                             ->columnSpanFull(),
 
-                        Text::make(fn (?CashRegister $record): string => 'Monto esperado al cierre (solo efectivo): '
-                            . CashRegister::formatMoney($record?->calculateExpectedAmount() ?? 0))
+                        Text::make(fn (?CashRegister $record): string => 'Ingresos de caja: '
+                            .CashRegister::formatMoney($record?->incomeEntriesTotal() ?? 0))
+                            ->visible(fn (?CashRegister $record): bool => ($record?->incomeEntriesTotal() ?? 0) > 0)
+                            ->columnSpanFull(),
+
+                        Text::make(fn (?CashRegister $record): string => 'Egresos de caja: '
+                            .CashRegister::formatMoney($record?->expenseEntriesTotal() ?? 0))
+                            ->visible(fn (?CashRegister $record): bool => ($record?->expenseEntriesTotal() ?? 0) > 0)
+                            ->columnSpanFull(),
+
+                        Text::make(fn (?CashRegister $record): string => 'Monto esperado al cierre (efectivo + ingresos − egresos): '
+                            .CashRegister::formatMoney($record?->calculateExpectedAmount() ?? 0))
                             ->columnSpanFull(),
 
                         Textarea::make('notes')
                             ->label('Notas')
                             ->columnSpanFull(),
+                    ]),
+
+                Section::make('Movimientos de caja')
+                    ->description('Registrá ingresos (dinero que entra sin ser una venta) y egresos (gastos pagados con la caja). Afectan el arqueo en efectivo.')
+                    ->visible(fn (?CashRegister $record): bool => $record?->status === 'open')
+                    ->columnSpanFull()
+                    ->schema([
+                        Repeater::make('entries')
+                            ->label('')
+                            ->relationship()
+                            ->schema([
+                                Select::make('type')
+                                    ->label('Tipo')
+                                    ->options([
+                                        'income' => 'Ingreso',
+                                        'expense' => 'Egreso',
+                                    ])
+                                    ->required()
+                                    ->native(false),
+                                TextInput::make('amount')
+                                    ->label('Monto')
+                                    ->required()
+                                    ->numeric()
+                                    ->minValue(0.01)
+                                    ->prefix('$'),
+                                TextInput::make('description')
+                                    ->label('Descripción')
+                                    ->required()
+                                    ->columnSpan(2),
+                            ])
+                            ->columns(3)
+                            ->addActionLabel('Agregar movimiento')
+                            ->reorderable(false)
+                            ->defaultItems(0),
                     ]),
 
                 Section::make('Cierre')
@@ -141,7 +186,7 @@ class CashRegisterForm
                         Select::make('status')
                             ->label('Estado')
                             ->options([
-                                'open'   => 'Abierta',
+                                'open' => 'Abierta',
                                 'closed' => 'Cerrada',
                             ])
                             ->disabled(),
@@ -173,6 +218,12 @@ class CashRegisterForm
                         DateTimePicker::make('closed_at')
                             ->label('Cierre')
                             ->disabled(),
+
+                        Text::make(fn (?CashRegister $record): string => 'Ingresos de caja: '
+                            .CashRegister::formatMoney($record?->incomeEntriesTotal() ?? 0)
+                            .' · Egresos de caja: '
+                            .CashRegister::formatMoney($record?->expenseEntriesTotal() ?? 0))
+                            ->columnSpanFull(),
 
                         Textarea::make('notes')
                             ->label('Notas')
