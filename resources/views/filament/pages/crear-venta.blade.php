@@ -318,6 +318,15 @@
                             class="fi-input block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm resize-none dark:border-white/20 dark:bg-white/5 dark:text-white dark:placeholder-gray-400"
                         ></textarea>
 
+                        <label class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer select-none">
+                            <input
+                                type="checkbox"
+                                wire:model="printTicket"
+                                class="fi-checkbox-input rounded border-gray-300 text-primary-600 shadow-sm focus:ring-primary-500 dark:border-white/20 dark:bg-white/5"
+                            />
+                            Imprimir comprobante
+                        </label>
+
                         {{-- Botón confirmar --}}
                         <button
                             wire:click="confirmSale"

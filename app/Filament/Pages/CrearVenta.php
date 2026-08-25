@@ -42,6 +42,7 @@ class CrearVenta extends Page
     // Pago
     public string $paymentMethod = '';
     public string $notes = '';
+    public bool $printTicket = true;
 
     // Número de venta creada (para confirmación)
     public ?string $lastSaleNumber = null;
@@ -364,8 +365,10 @@ class CrearVenta extends Page
         $this->paymentMethod = '';
         $this->notes         = '';
 
-        $ticket = app(SaleTicketEscPosBuilder::class)->build($sale);
-        $this->dispatch('print-escpos-ticket', content: $ticket);
+        if ($this->printTicket) {
+            $ticket = app(SaleTicketEscPosBuilder::class)->build($sale);
+            $this->dispatch('print-escpos-ticket', content: $ticket);
+        }
 
         Notification::make()
             ->title("¡Venta {$this->lastSaleNumber} registrada!")
