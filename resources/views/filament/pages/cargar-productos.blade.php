@@ -134,7 +134,7 @@
 
                     <div class="carga-rapida-card-body">
                         <label class="mb-3 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                            Código de barras
+                            Código
                         </label>
 
                         <div class="carga-rapida-scanner-row">
@@ -185,7 +185,7 @@
                                     class="inline-flex items-center gap-2 rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-medium text-primary-600 transition hover:bg-primary-50 dark:border-white/10 dark:text-primary-400 dark:hover:bg-primary-500/10"
                                 >
                                     <x-filament::icon icon="heroicon-o-pencil-square" class="h-4 w-4" />
-                                    Sin código de barras
+                                    Sin código
                                 </button>
                             </div>
                         @endif

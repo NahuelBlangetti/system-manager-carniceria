@@ -2,6 +2,7 @@
 
 namespace App\Services\Tickets;
 
+use App\Models\Product;
 use App\Models\Sale;
 use App\Models\SaleItem;
 
@@ -81,7 +82,31 @@ class SaleTicketEscPosBuilder
     private function itemLine(SaleItem $item): string
     {
         $qty = (float) $item->quantity;
-        $qtyLabel = $this->formatNumber($qty);
+
+        /*
+         * Un item vendido por peso se imprime con tres decimales y con la
+         * unidad: la balanza marca gramos, y redondear a dos decimales haria
+         * que el ticket no coincida con el numero que el cliente vio en el
+         * display. Tampoco se omite la cantidad cuando es exactamente 1: en
+         * una venta por peso, "1,000 kg" es justamente el dato a verificar.
+         *
+         * Los decimales salen de la misma regla que usa la pantalla, para que
+         * el comprobante no muestre una cantidad distinta a la del carrito.
+         */
+        $hasUnit = ! in_array($item->unit, [null, ''], true);
+        // Sin unidad guardada (ventas anteriores a la columna) no se puede
+        // saber si el numero son kilos o unidades, asi que se mantienen los
+        // dos decimales de siempre: asumir cero borraria los gramos de un
+        // ticket historico reimpreso.
+        $decimals = $hasUnit ? Product::quantityDecimals($item->unit) : 2;
+        $qtyLabel = $this->formatNumber($qty, $decimals);
+
+        if ($hasUnit && $decimals > 0) {
+            $qtyLabel .= ' '.$this->sanitize((string) $item->unit);
+        }
+
+        $showQty = $decimals > 0 || $qty != 1.0;
+
         $unitPrice = $this->formatNumber((float) $item->unit_price);
         $subtotal = $this->formatNumber((float) $item->subtotal);
         $productName = $this->sanitize($item->product_name);
@@ -92,18 +117,20 @@ class SaleTicketEscPosBuilder
         $code = $item->barcode ?: $item->sku;
         $codeLine = $code ? '  Cod '.$this->sanitize($code)."\n" : '';
 
-        $head = $qty == 1.0
-            ? $productName
-            : "{$qtyLabel} x {$productName}";
+        $head = $showQty
+            ? "{$qtyLabel} x {$productName}"
+            : $productName;
 
         if (mb_strlen($head) + 1 + mb_strlen($subtotal) <= self::WIDTH) {
             return $this->padRight($head, self::WIDTH - mb_strlen($subtotal)).$subtotal."\n".$codeLine;
         }
 
-        $detail = $qty == 1.0 ? '' : "{$qtyLabel} x {$unitPrice}";
+        $detail = $showQty ? "{$qtyLabel} x {$unitPrice}" : '';
         $detailLine = $this->padRight($detail, self::WIDTH - mb_strlen($subtotal)).$subtotal."\n";
 
-        return implode("\n", $this->wrap($head))."\n".$detailLine.$codeLine;
+        // En el camino largo la cantidad ya va en la linea de detalle, asi que
+        // arriba se envuelve solo el nombre y no se repite.
+        return implode("\n", $this->wrap($productName))."\n".$detailLine.$codeLine;
     }
 
     /**
@@ -179,9 +206,9 @@ class SaleTicketEscPosBuilder
         return strtr($text, $map);
     }
 
-    private function formatNumber(float $value): string
+    private function formatNumber(float $value, int $decimals = 2): string
     {
-        return number_format($value, 2, ',', '.');
+        return number_format($value, $decimals, ',', '.');
     }
 
     /**

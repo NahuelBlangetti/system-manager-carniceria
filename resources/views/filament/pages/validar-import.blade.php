@@ -96,7 +96,7 @@
                                 <th class="px-4 py-3">Estado</th>
                                 <th class="px-4 py-3">Nombre</th>
                                 <th class="px-4 py-3">SKU proveedor</th>
-                                <th class="px-4 py-3">Código de barras</th>
+                                <th class="px-4 py-3">Código</th>
                                 <th class="px-4 py-3">Unidad</th>
                                 <th class="px-4 py-3">Costo</th>
                                 <th class="px-4 py-3">Venta</th>

@@ -34,6 +34,7 @@ class Product extends Model
         'image',
         'cost_price',
         'sale_price',
+        'bulk_price_2kg',
         'margin_percentage',
         'stock',
         'min_stock',
@@ -43,6 +44,7 @@ class Product extends Model
     protected $casts = [
         'cost_price'        => 'decimal:2',
         'sale_price'        => 'decimal:2',
+        'bulk_price_2kg'    => 'decimal:2',
         'margin_percentage' => 'decimal:2',
         'stock'             => 'decimal:3',
         'min_stock'         => 'decimal:3',
@@ -84,10 +86,22 @@ class Product extends Model
         return $this->hasMany(ProductBatch::class);
     }
 
+    /**
+     * Decimales con los que se muestra una cantidad de esta unidad.
+     *
+     * Vive acá para que la pantalla y el ticket impreso coincidan: si el
+     * comprobante redondeara los gramos, no daría lo mismo que el número que
+     * el cliente vio en el display de la balanza.
+     */
+    public static function quantityDecimals(?string $unit): int
+    {
+        return in_array($unit, ['kg', 'g', 'litro'], true) ? 3 : 0;
+    }
+
     public static function formatQuantity(string $unit, float|string $quantity): string
     {
         $quantity  = (float) $quantity;
-        $decimals  = in_array($unit, ['kg', 'g', 'litro'], true) ? 3 : 0;
+        $decimals  = self::quantityDecimals($unit);
         $formatted = number_format($quantity, $decimals, ',', '.');
 
         $label = ($quantity !== 1.0)

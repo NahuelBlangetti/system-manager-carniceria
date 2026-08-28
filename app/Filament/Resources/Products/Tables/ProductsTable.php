@@ -14,7 +14,6 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
@@ -30,12 +29,6 @@ class ProductsTable
             ->recordUrl(null)
             ->recordAction('edit')
             ->columns([
-                ImageColumn::make('image')
-                    ->label('Imagen')
-                    ->disk('public')
-                    ->square()
-                    ->imageSize(48)
-                    ->toggleable(),
                 TextColumn::make('name')
                     ->label('Nombre')
                     ->searchable()
@@ -137,13 +130,13 @@ class ProductsTable
                     ->label('Asignar código')
                     ->icon('heroicon-o-viewfinder-circle')
                     ->color('gray')
-                    ->modalHeading('Asignar código de barras')
-                    ->modalDescription('Escaneá el código de barras o escribilo manualmente.')
+                    ->modalHeading('Asignar código')
+                    ->modalDescription('Escaneá el código o escribilo manualmente.')
                     ->modalSubmitActionLabel('Guardar')
                     ->modalWidth('sm')
                     ->schema([
                         TextInput::make('barcode')
-                            ->label('Código de barras')
+                            ->label('Código')
                             ->placeholder('Apuntá el escáner y escaneá...')
                             ->autofocus()
                             ->maxLength(ProductBarcode::MAX_LENGTH)

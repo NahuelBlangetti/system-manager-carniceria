@@ -16,7 +16,7 @@
         <thead>
             <tr>
                 <th style="width:70%">Producto</th>
-                <th style="width:30%">Código de barras</th>
+                <th style="width:30%">Código</th>
             </tr>
         </thead>
         <tbody>
@@ -42,7 +42,7 @@
     </table>
 
     @include('pdf.partials.footer', [
-        'footerNote' => 'Listado de productos con código de barras interno.',
+        'footerNote' => 'Listado de productos con código interno.',
     ])
 
 </div>

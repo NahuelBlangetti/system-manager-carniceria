@@ -3,7 +3,6 @@
 namespace App\Filament\Widgets;
 
 use App\Models\SaleItem;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
@@ -38,13 +37,6 @@ class TopProducts extends TableWidget
                     ->limit(8)
             )
             ->columns([
-                ImageColumn::make('product.image')
-                    ->label('')
-                    ->disk('public')
-                    ->imageSize(48)
-                    ->defaultImageUrl(asset('images/logo.png'))
-                    ->extraImgAttributes(['class' => 'rounded-lg object-cover']),
-
                 TextColumn::make('product.name')
                     ->label('Producto')
                     ->weight('semibold'),

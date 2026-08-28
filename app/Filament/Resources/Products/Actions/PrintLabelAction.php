@@ -21,13 +21,13 @@ class PrintLabelAction
             ->label('Imprimir etiqueta')
             ->icon('heroicon-o-printer')
             ->color('gray')
-            ->modalHeading('Imprimir etiqueta de código de barras')
+            ->modalHeading('Imprimir etiqueta de código')
             ->modalDescription('Se envía a la impresora de tickets configurada en este navegador.')
             ->modalSubmitActionLabel('Imprimir')
             ->modalWidth('sm')
             ->disabled(fn (Product $record): bool => blank($record->barcode))
             ->tooltip(fn (Product $record): ?string => blank($record->barcode)
-                ? 'Asigná un código de barras antes de imprimir'
+                ? 'Asigná un código antes de imprimir'
                 : null)
             ->schema([
                 TextInput::make('copies')
@@ -71,7 +71,7 @@ class PrintLabelAction
             ->label('Imprimir etiquetas')
             ->icon('heroicon-o-printer')
             ->color('gray')
-            ->modalHeading('Imprimir etiquetas de código de barras')
+            ->modalHeading('Imprimir etiquetas de código')
             ->modalDescription(fn (Collection $records): string => self::scopeDescription($records->count()))
             ->modalSubmitActionLabel('Imprimir')
             ->modalWidth('sm')
@@ -97,8 +97,8 @@ class PrintLabelAction
                 if ($printable->isEmpty()) {
                     Notification::make()
                         ->title($invalid->isNotEmpty()
-                            ? 'Ningún producto tiene un código de barras válido para imprimir'
-                            : 'Ningún producto seleccionado tiene código de barras')
+                            ? 'Ningún producto tiene un código válido para imprimir'
+                            : 'Ningún producto seleccionado tiene código')
                         ->warning()
                         ->send();
 

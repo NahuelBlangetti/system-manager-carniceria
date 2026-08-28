@@ -15,13 +15,13 @@ class ExportProductsPdfAction
 {
     private const TYPES = [
         'barcodes' => [
-            'label'        => 'Códigos de barras',
-            'modalHeading' => 'Exportar códigos de barras',
-            'description'  => 'Listado con nombre del producto y su código de barras.',
-            'pdfTitle'     => 'Códigos de Barras',
+            'label'        => 'Códigos',
+            'modalHeading' => 'Exportar códigos',
+            'description'  => 'Listado con nombre del producto y su código.',
+            'pdfTitle'     => 'Códigos',
             'view'         => 'pdf.products-barcodes',
             'orientation'  => 'portrait',
-            'filename'     => 'codigos-barras',
+            'filename'     => 'codigos',
         ],
         'price_list' => [
             'label'        => 'Lista de precios (Clientes)',

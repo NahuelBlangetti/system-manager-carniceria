@@ -16,7 +16,7 @@ class ProductBarcode implements ValidationRule
     /** Caracteres CODE39 sin espacio (los espacios casi nunca vienen de un escáner). */
     public const ALLOWED_CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-.$/+%';
 
-    public const MIN_LENGTH = 4;
+    public const MIN_LENGTH = 1;
 
     public const MAX_LENGTH = 20;
 
@@ -47,26 +47,26 @@ class ProductBarcode implements ValidationRule
         $length = strlen($code);
 
         if ($length < self::MIN_LENGTH) {
-            return 'El código de barras es demasiado corto (mínimo ' . self::MIN_LENGTH . ' caracteres). Escaneá el código del producto.';
+            return 'El código es demasiado corto (mínimo ' . self::MIN_LENGTH . ' caracteres). Escaneá el código del producto.';
         }
 
         if ($length > self::MAX_LENGTH) {
-            return 'El código de barras es demasiado largo (máximo ' . self::MAX_LENGTH . ' caracteres). ¿Estás escribiendo el nombre del producto en vez del código?';
+            return 'El código es demasiado largo (máximo ' . self::MAX_LENGTH . ' caracteres). ¿Estás escribiendo el nombre del producto en vez del código?';
         }
 
         if (! preg_match('/^[' . preg_quote(self::ALLOWED_CHARS, '/') . ']+$/', $code)) {
-            return 'El código de barras solo puede tener letras, números y los símbolos - . $ / + %. Sacá espacios y tildes.';
+            return 'El código solo puede tener letras, números y los símbolos - . $ / + %. Sacá espacios y tildes.';
         }
 
         if (! preg_match('/\d/', $code)) {
-            return 'El código de barras debe incluir al menos un número. No uses el nombre del producto.';
+            return 'El código debe incluir al menos un número. No uses el nombre del producto.';
         }
 
         // Muchas letras seguidas sin números suelen ser un nombre mal cargado
         // (ej. ATEXPROFEXT/INT). Los códigos reales suelen ser numéricos o
         // alfanuméricos cortos con dígitos intercalados.
         if (preg_match('/[A-Z]{8,}/', $code)) {
-            return 'Ese valor parece un nombre, no un código de barras. Escaneá el código del envase o la etiqueta del proveedor.';
+            return 'Ese valor parece un nombre, no un código. Escaneá el código de la balanza o la etiqueta del proveedor.';
         }
 
         $exists = Product::query()
@@ -75,7 +75,7 @@ class ProductBarcode implements ValidationRule
             ->exists();
 
         if ($exists) {
-            return 'Ese código de barras ya está asignado a otro producto.';
+            return 'Ese código ya está asignado a otro producto.';
         }
 
         return null;

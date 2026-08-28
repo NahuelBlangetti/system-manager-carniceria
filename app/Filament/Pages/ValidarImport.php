@@ -215,7 +215,7 @@ class ValidarImport extends Page
         Notification::make()
             ->title('Productos: ' . implode(' · ', $parts))
             ->body($invalidBarcodes > 0
-                ? "Se omitieron {$invalidBarcodes} código(s) de barras inválido(s). Podés asignarlos después escaneando el producto."
+                ? "Se omitieron {$invalidBarcodes} código(s) inválido(s). Podés asignarlos después escaneando el producto."
                 : null)
             ->success()
             ->send();

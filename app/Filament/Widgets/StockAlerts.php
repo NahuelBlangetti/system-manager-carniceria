@@ -3,7 +3,6 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Product;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
@@ -41,13 +40,6 @@ class StockAlerts extends TableWidget
                     ->limit(10)
             )
             ->columns([
-                ImageColumn::make('image')
-                    ->label('')
-                    ->disk('public')
-                    ->imageSize(36)
-                    ->defaultImageUrl(asset('images/logo.png'))
-                    ->extraImgAttributes(['class' => 'rounded object-cover']),
-
                 TextColumn::make('name')
                     ->label('Producto')
                     ->limit(25)

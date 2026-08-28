@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Products\Schemas;
 
 use App\Support\ProductBarcode;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -21,12 +20,12 @@ class ProductForm
             ->columns(2)
             ->components([
                 Section::make('Códigos')
-                    ->description('El código de barras es el interno de la carnicería. El SKU es el código del proveedor.')
+                    ->description('El código es el interno de la carnicería, el que usa la balanza. El SKU es el código del proveedor.')
                     ->columnSpanFull()
                     ->columns(2)
                     ->schema([
                         TextInput::make('barcode')
-                            ->label('Código de barras')
+                            ->label('Código')
                             ->placeholder('Apuntá el escáner al producto y escaneá...')
                             ->autofocus()
                             ->maxLength(ProductBarcode::MAX_LENGTH)
@@ -75,15 +74,10 @@ class ProductForm
                                 'par'    => 'Par',
                             ])
                             ->default('unidad')
-                            ->required(),
+                            ->required()
+                            ->live(),
                         Textarea::make('description')
                             ->label('Descripción')
-                            ->columnSpanFull(),
-                        FileUpload::make('image')
-                            ->label('Imagen')
-                            ->image()
-                            ->disk('public')
-                            ->directory('products')
                             ->columnSpanFull(),
                     ]),
 
@@ -134,6 +128,13 @@ class ProductForm
                                     $set('margin_percentage', round(($sale / $cost - 1) * 100, 1));
                                 }
                             }),
+                        TextInput::make('bulk_price_2kg')
+                            ->label('Precio por 2 kg (opcional)')
+                            ->helperText('Si se carga, al pesar 2 kg o más de este producto se cobra este precio/2 por kg en vez del precio de venta normal.')
+                            ->numeric()
+                            ->prefix('$')
+                            ->columnSpanFull()
+                            ->visible(fn (Get $get): bool => $get('unit') === 'kg'),
                     ]),
 
                 Section::make('Stock')

@@ -33,7 +33,7 @@ class ProductLabelEscPosBuilder
     public function build(Product $product, int $copies = 1): string
     {
         if (blank($product->barcode)) {
-            throw new InvalidArgumentException("El producto \"{$product->name}\" no tiene código de barras asignado.");
+            throw new InvalidArgumentException("El producto \"{$product->name}\" no tiene código asignado.");
         }
 
         if ($error = ProductBarcode::errorMessage($product->barcode, $product->id)) {
@@ -110,7 +110,7 @@ class ProductLabelEscPosBuilder
         $normalized = ProductBarcode::normalize($code);
 
         if ($normalized === null) {
-            throw new InvalidArgumentException('El código de barras no tiene caracteres válidos para CODE39.');
+            throw new InvalidArgumentException('El código no tiene caracteres válidos para CODE39.');
         }
 
         return $normalized;

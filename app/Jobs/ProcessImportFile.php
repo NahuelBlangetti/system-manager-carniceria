@@ -630,12 +630,12 @@ class ProcessImportFile implements ShouldQueue
 
             if ($barcode && isset($existingByKey['barcode'][$barcode])) {
                 $existingEntry = $existingByKey['barcode'][$barcode];
-                $reason        = "Ya existe con este código de barras: \"{$existingEntry['name']}\"";
+                $reason        = "Ya existe con este código: \"{$existingEntry['name']}\"";
             } elseif (isset($existingByKey['name'][$name])) {
                 $existingEntry = $existingByKey['name'][$name];
                 $reason        = 'Ya existe un producto con este nombre';
             } elseif ($barcode && isset($seenBarcodes[$barcode])) {
-                $reason = 'Código de barras repetido dentro de este archivo';
+                $reason = 'Código repetido dentro de este archivo';
             } elseif (isset($seenNames[$name])) {
                 $reason = 'Nombre repetido dentro de este archivo';
             }

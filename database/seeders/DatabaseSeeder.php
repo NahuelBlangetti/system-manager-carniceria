@@ -11,7 +11,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             SupplierSeeder::class,
-            ProductSeeder::class,
+            // ProductSeeder::class es catálogo demo (Vacuno, Embutidos y Fiambres,
+            // Congelados y Elaborados, Insumos de Mostrador, etc.). Se sacó del
+            // flujo automático para que no conviva con la lista de precios real.
+            ProductPriceListSeeder::class,
         ]);
     }
 }
