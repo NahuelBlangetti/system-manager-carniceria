@@ -22,7 +22,7 @@ class UserSeeder extends Seeder
             $name = env('ADMIN_NAME', 'Administrador');
         } else {
             $email    = env('ADMIN_EMAIL', 'admin@carniceria-emanuel.com');
-            $password = env('ADMIN_PASSWORD', 'carniceriaemanuel852');
+            $password = env('ADMIN_PASSWORD', 'Emanuel465');
             $name     = env('ADMIN_NAME', 'Administrador');
         }
 
